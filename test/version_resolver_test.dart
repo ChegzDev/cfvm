@@ -11,39 +11,34 @@ void main() {
   setUp(() => env = TestEnv());
   tearDown(() => env.dispose());
 
-  group('resolveActive', () {
-    test('fails with a hint when nothing is configured', () {
-      expect(
-        () => env.context().resolver.resolveActive(env.projectDir.path),
-        throwsA(isA<CfvmException>()
-            .having((e) => e.hint, 'hint', contains('use <version>'))),
-      );
+  group('configuredVersion', () {
+    test('is null when nothing is configured', () {
+      expect(env.context().resolver.configuredVersion(env.projectDir.path),
+          isNull);
     });
 
-    test('uses the global version when the project has none', () {
-      createFakeSdk(env.home, '3.19.0');
+    test('falls back to the global version', () {
       GlobalConfig(globalVersion: '3.19.0').save(env.home.configPath);
-      final sdk = env.context().resolver.resolveActive(env.projectDir.path);
-      expect(sdk.name, '3.19.0');
+      final v = env.context().resolver.configuredVersion(env.projectDir.path)!;
+      expect(v.version, '3.19.0');
+      expect(v.isGlobal, isTrue);
     });
 
     test('project version takes precedence over global', () {
-      createFakeSdk(env.home, '3.19.0');
-      createFakeSdk(env.home, '3.22.1');
       GlobalConfig(globalVersion: '3.19.0').save(env.home.configPath);
       ProjectConfig.save(env.projectDir.path, '3.22.1');
-      final sdk = env.context().resolver.resolveActive(env.projectDir.path);
-      expect(sdk.name, '3.22.1');
+      final v = env.context().resolver.configuredVersion(env.projectDir.path)!;
+      expect(v.version, '3.22.1');
+      expect(v.isGlobal, isFalse);
+      expect(v.source, endsWith('.cfvm.json'));
     });
+  });
 
-    test('reports a configured version that is not installed', () {
-      ProjectConfig.save(env.projectDir.path, '3.22.1');
-      expect(
-        () => env.context().resolver.resolveActive(env.projectDir.path),
-        throwsA(isA<CfvmException>()
-            .having((e) => e.message, 'message', contains('not installed'))
-            .having((e) => e.hint, 'hint', contains('install 3.22.1'))),
-      );
-    });
+  test('requireConfigured fails with a hint when nothing is configured', () {
+    expect(
+      () => env.context().resolver.requireConfigured(env.projectDir.path),
+      throwsA(isA<CfvmException>()
+          .having((e) => e.hint, 'hint', contains('use <version>'))),
+    );
   });
 }

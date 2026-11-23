@@ -1,5 +1,3 @@
-import 'package:path/path.dart' as p;
-
 import '../config/global_config.dart';
 import '../config/project_config.dart';
 import '../errors.dart';
@@ -38,8 +36,9 @@ class VersionResolver {
     return null;
   }
 
-  /// The installed SDK to run `flutter`/`dart` with in [directory].
-  InstalledSdk resolveActive(String directory) {
+  /// Like [configuredVersion], but fails with a helpful message when no
+  /// version is configured.
+  ConfiguredVersion requireConfigured(String directory) {
     final configured = configuredVersion(directory);
     if (configured == null) {
       throw CfvmException(
@@ -48,24 +47,6 @@ class VersionResolver {
             'or "$cliName global <version>" to set a default.',
       );
     }
-    final where = configured.isGlobal
-        ? 'as the global version'
-        : 'in ${p.relative(configured.source, from: directory)}';
-    final sdk = cache.find(configured.version);
-    if (sdk == null) {
-      throw CfvmException(
-        'Flutter ${configured.version} is configured $where '
-        'but is not installed.',
-        hint: 'Install it with: $cliName install ${configured.version}',
-      );
-    }
-    if (!sdk.isComplete) {
-      throw CfvmException(
-        'Flutter ${configured.version} is configured $where but its '
-        'installation at ${sdk.path} is incomplete.',
-        hint: 'Reinstall it with: $cliName install ${configured.version}',
-      );
-    }
-    return sdk;
+    return configured;
   }
 }

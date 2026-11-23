@@ -16,7 +16,13 @@ class Logger {
   /// Enables [detail] output. Set from the global `--verbose` flag.
   bool verbose = false;
 
-  void info(String message) => _out.writeln(message);
+  /// Sends [info] and progress output to stderr, so it does not mix with
+  /// the stdout of a proxied `flutter`/`dart` command.
+  bool infoToStderr = false;
+
+  StringSink get _info => infoToStderr ? _err : _out;
+
+  void info(String message) => _info.writeln(message);
 
   void warn(String message) => _err.writeln('Warning: $message');
 
@@ -28,11 +34,11 @@ class Logger {
 
   /// Rewrites the current terminal line (no-op when not on a terminal).
   void progress(String message) {
-    if (_showProgress) _out.write('\r$message');
+    if (_showProgress) _info.write('\r$message');
   }
 
   /// Ends a sequence of [progress] updates.
   void progressDone() {
-    if (_showProgress) _out.writeln();
+    if (_showProgress) _info.writeln();
   }
 }

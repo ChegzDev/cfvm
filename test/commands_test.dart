@@ -241,11 +241,56 @@ void main() {
       expect(dartRun.arguments, ['pub', 'get']);
     });
 
-    test('fail with a hint when the SDK is missing', () async {
+    test('install a missing project version first, then run', () async {
       ProjectConfig.save(env.projectDir.path, '3.19.0');
+      expect(await run(['flutter', '--version', '--machine']), 0);
+      expect(env.installer.installed, ['3.19.0']);
+      expect(env.processRunner.runs.single.executable,
+          p.join(env.home.versionDir('3.19.0'), 'bin', 'flutter'));
+      expect(
+          env.processRunner.runs.single.arguments, ['--version', '--machine']);
+      // Install messages go to stderr so the command's stdout stays clean.
+      expect(env.out.toString(), isEmpty);
+      expect(env.err.toString(), contains('Installing it now'));
+    });
+
+    test('install a missing global version too (dart)', () async {
+      GlobalConfig(globalVersion: '3.19.0').save(env.home.configPath);
+      expect(await run(['dart', 'pub', 'get']), 0);
+      expect(env.installer.installed, ['3.19.0']);
+      expect(env.processRunner.runs.single.executable,
+          p.join(env.home.versionDir('3.19.0'), 'bin', 'dart'));
+    });
+
+    test('do not install again once installed', () async {
+      ProjectConfig.save(env.projectDir.path, '3.19.0');
+      await run(['flutter', 'doctor']);
+      await run(['flutter', 'doctor']);
+      expect(env.installer.installed, ['3.19.0']);
+      expect(env.processRunner.runs, hasLength(2));
+    });
+
+    test('still fail when no version is configured', () async {
       expect(await run(['flutter', 'doctor']), 1);
+      expect(env.installer.installed, isEmpty);
       expect(env.processRunner.runs, isEmpty);
-      expect(env.out.toString(), contains('install 3.19.0'));
+    });
+
+    test('fail without running for an unknown configured version', () async {
+      ProjectConfig.save(env.projectDir.path, '9.9.9');
+      expect(await run(['flutter', 'doctor']), 1);
+      expect(env.err.toString(), contains('not found'));
+      expect(env.processRunner.runs, isEmpty);
+    });
+
+    test('never replace an incomplete install without confirmation', () async {
+      ProjectConfig.save(env.projectDir.path, '3.19.0');
+      final dir = Directory(env.home.versionDir('3.19.0'))
+        ..createSync(recursive: true);
+      expect(await run(['flutter', 'doctor']), 1);
+      expect(dir.existsSync(), isTrue);
+      expect(env.installer.installed, isEmpty);
+      expect(env.processRunner.runs, isEmpty);
     });
   });
 }

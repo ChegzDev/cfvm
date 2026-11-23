@@ -63,8 +63,8 @@ With Option B, type `cfvm …` instead.
 | `dart run cfvm global [version]` | Set the default Flutter version. Installs it first if needed. Without a version, shows the current one. |
 | `dart run cfvm list` | List installed SDKs and show which are used by the project and globally. |
 | `dart run cfvm cleanup [--yes]` | Find installed versions that nothing uses and offer to remove them. |
-| `dart run cfvm flutter <args>` | Run `flutter` from the selected SDK. |
-| `dart run cfvm dart <args>` | Run `dart` from the selected SDK. |
+| `dart run cfvm flutter <args>` | Run `flutter` from the selected SDK. Installs that version first if needed. |
+| `dart run cfvm dart <args>` | Run `dart` from the selected SDK. Installs that version first if needed. |
 
 Global option: `-v, --verbose` prints which SDK is being used.
 
@@ -103,8 +103,12 @@ For `flutter` and `dart` commands, CFVM checks in this order:
 
 1. `.cfvm.json` in the current directory or the nearest parent directory.
 2. The global version.
-3. If neither is set, or the version is not installed, CFVM exits with an
-   error that names the command to run.
+3. If neither is set, CFVM exits with an error that names the command to run.
+
+If the selected version is not installed yet (for example, right after
+cloning a project that has a `.cfvm.json`), CFVM installs it first and then
+runs the command. CFVM's install messages go to stderr, so the command's own
+output (e.g. `flutter --version --machine`) stays clean.
 
 ## Files and directories
 

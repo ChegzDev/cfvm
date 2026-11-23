@@ -1,6 +1,6 @@
 name: cfvm
 description: CFVM (Chegz Flutter Version Management) - a lightweight CLI to install multiple Flutter SDK versions and switch between them per project.
-version: 1.0.2
+version: 1.0.3
 repository: https://github.com/ChegzDev/cfvm
 issue_tracker: https://github.com/ChegzDev/cfvm/issues
 topics:

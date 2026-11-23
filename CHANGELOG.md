@@ -1,3 +1,10 @@
+## 1.0.3
+
+- `flutter` and `dart` now install the project's (or global) Flutter version
+  automatically when it is not installed yet, then run the command. Useful
+  right after cloning a project that has a `.cfvm.json`. Install messages go
+  to stderr so the command's stdout stays clean.
+
 ## 1.0.2
 
 - Hints, help and error messages now match how CFVM was installed: `cfvm …`
