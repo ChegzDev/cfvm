@@ -86,9 +86,31 @@ void main() {
       expect(global().projects.single, p.normalize(env.projectDir.path));
     });
 
-    test('fails for versions that are not installed', () async {
-      expect(await run(['use', '3.19.0']), 1);
-      expect(env.err.toString(), contains('not installed'));
+    test('installs a missing version first, then sets it', () async {
+      expect(await run(['use', '3.19.0']), 0);
+      expect(env.installer.installed, ['3.19.0']);
+      final file = File(p.join(env.projectDir.path, '.cfvm.json'));
+      expect(jsonDecode(file.readAsStringSync()), {'flutter': '3.19.0'});
+      expect(env.out.toString(), contains('installed successfully'));
+    });
+
+    test('does not install again when already installed', () async {
+      createFakeSdk(env.home, '3.19.0');
+      expect(await run(['use', '3.19.0']), 0);
+      expect(env.installer.installed, isEmpty);
+      expect(env.releases.fetchCount, 0);
+    });
+
+    test('pins the exact release for a channel', () async {
+      expect(await run(['use', 'stable']), 0);
+      final file = File(p.join(env.projectDir.path, '.cfvm.json'));
+      expect(jsonDecode(file.readAsStringSync()), {'flutter': '3.22.1'});
+    });
+
+    test('writes nothing for an unknown version', () async {
+      expect(await run(['use', '9.9.9']), 1);
+      expect(env.err.toString(), contains('not found'));
+      expect(env.installer.installed, isEmpty);
       expect(File(p.join(env.projectDir.path, '.cfvm.json')).existsSync(),
           isFalse);
     });
@@ -104,8 +126,15 @@ void main() {
       expect(env.out.toString(), contains('Global Flutter version: 3.19.0'));
     });
 
-    test('fails for versions that are not installed', () async {
-      expect(await run(['global', '3.19.0']), 1);
+    test('installs a missing version first, then sets it', () async {
+      expect(await run(['global', '3.19.0']), 0);
+      expect(env.installer.installed, ['3.19.0']);
+      expect(global().globalVersion, '3.19.0');
+    });
+
+    test('leaves the global version unchanged for an unknown version',
+        () async {
+      expect(await run(['global', '9.9.9']), 1);
       expect(global().globalVersion, isNull);
     });
   });

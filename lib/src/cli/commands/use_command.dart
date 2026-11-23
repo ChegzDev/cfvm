@@ -12,7 +12,8 @@ class UseCommand extends CfvmCommand {
   @override
   String get description =>
       'Set the Flutter SDK version for the current project '
-      '(writes ${ProjectConfig.fileName}).';
+      '(writes ${ProjectConfig.fileName}).\n'
+      'Installs the version first if it is not installed yet.';
 
   @override
   String get invocation => '$cliName use <version>';
@@ -20,7 +21,7 @@ class UseCommand extends CfvmCommand {
   @override
   Future<int> run() async {
     final request = requiredArgument('version');
-    final version = await context.resolver.resolveInstalled(request);
+    final version = await installIfMissing(request);
 
     var root = ProjectConfig.findProjectRoot(context.workingDirectory);
     if (root == null) {

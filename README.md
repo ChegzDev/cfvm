@@ -58,8 +58,8 @@ type `cfvm …` instead.
 | Command | Description |
 |---|---|
 | `dart run cfvm install [version]` | Download and install a Flutter SDK. Accepts a version (`3.19.0`) or a channel (`stable`, `beta`, `master`). Without a version, installs the version configured for the current project. |
-| `dart run cfvm use <version>` | Pin the Flutter version for the current project (writes `.cfvm.json`). |
-| `dart run cfvm global [version]` | Set the default Flutter version. Without a version, shows the current one. |
+| `dart run cfvm use <version>` | Pin the Flutter version for the current project (writes `.cfvm.json`). Installs it first if needed. |
+| `dart run cfvm global [version]` | Set the default Flutter version. Installs it first if needed. Without a version, shows the current one. |
 | `dart run cfvm list` | List installed SDKs and show which are used by the project and globally. |
 | `dart run cfvm cleanup [--yes]` | Find installed versions that nothing uses and offer to remove them. |
 | `dart run cfvm flutter <args>` | Run `flutter` from the selected SDK. |
@@ -70,12 +70,11 @@ Global option: `-v, --verbose` prints which SDK is being used.
 ### Typical workflow
 
 ```bash
-dart run cfvm install stable        # installs the current stable, e.g. 3.50.1
-dart run cfvm install 3.19.0
-dart run cfvm global 3.50.1         # default for everything
-
+dart run cfvm global stable         # installs the current stable (e.g. 3.50.1)
+                                    # and makes it the default
 cd my_app
-dart run cfvm use 3.19.0            # this project uses 3.19.0
+dart run cfvm use 3.19.0            # installs 3.19.0 if needed; this project
+                                    # now uses it
 dart run cfvm flutter --version     # -> Flutter 3.19.0
 dart run cfvm dart pub get
 dart run cfvm flutter run           # interactive commands work too

@@ -10,8 +10,8 @@ class GlobalCommand extends CfvmCommand {
   @override
   String get description =>
       'Set the default Flutter SDK version, used outside projects that have '
-      'their own version.\nWithout a version, shows the current global '
-      'version.';
+      'their own version.\nInstalls the version first if it is not installed '
+      'yet. Without a version, shows the current global version.';
 
   @override
   String get invocation => '$cliName global [version]';
@@ -29,7 +29,7 @@ class GlobalCommand extends CfvmCommand {
       return 0;
     }
 
-    final version = await context.resolver.resolveInstalled(request);
+    final version = await installIfMissing(request);
     config.globalVersion = version;
     context.saveGlobalConfig(config);
     logger.info('Global Flutter version set to $version.');

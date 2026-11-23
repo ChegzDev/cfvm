@@ -1,3 +1,9 @@
+## 1.0.1
+
+- `use` and `global` now install the requested version automatically when it
+  is not installed yet (same download, checksum and safety checks as
+  `install`), then set it. Previously they stopped with "not installed".
+
 ## 1.0.0
 
 Initial release.

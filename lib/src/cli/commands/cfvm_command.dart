@@ -18,6 +18,17 @@ abstract class CfvmCommand extends Command<int> {
     return rest.isEmpty ? null : rest.single;
   }
 
+  /// Installs [request] if it is not installed yet (like `install` would)
+  /// and returns the installed SDK name.
+  Future<String> installIfMissing(String request) async {
+    final result = await context.provisioner.ensureInstalled(request);
+    if (result.newlyInstalled) {
+      logger.info('Flutter ${result.name} installed successfully.');
+      logger.info('');
+    }
+    return result.name;
+  }
+
   /// The single positional argument, which is required.
   String requiredArgument(String name) =>
       optionalArgument() ?? usageException('Missing <$name> argument.');

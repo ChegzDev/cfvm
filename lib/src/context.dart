@@ -9,6 +9,7 @@ import 'releases/flutter_releases.dart';
 import 'sdk/cfvm_home.dart';
 import 'sdk/sdk_cache.dart';
 import 'sdk/sdk_installer.dart';
+import 'sdk/sdk_provisioner.dart';
 import 'sdk/version_resolver.dart';
 
 /// Everything a command needs, bundled so tests can substitute fakes.
@@ -60,7 +61,16 @@ class CfvmContext {
   final SdkInstaller installer;
 
   late final VersionResolver resolver =
-      VersionResolver(home: home, host: host, cache: cache, releases: releases);
+      VersionResolver(home: home, cache: cache);
+
+  late final SdkProvisioner provisioner = SdkProvisioner(
+    cache: cache,
+    releases: releases,
+    installer: installer,
+    host: host,
+    logger: logger,
+    prompter: prompter,
+  );
 
   GlobalConfig loadGlobalConfig() => GlobalConfig.load(home.configPath);
 

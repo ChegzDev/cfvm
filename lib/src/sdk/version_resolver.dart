@@ -3,9 +3,6 @@ import 'package:path/path.dart' as p;
 import '../config/global_config.dart';
 import '../config/project_config.dart';
 import '../errors.dart';
-import '../platform.dart';
-import '../releases/flutter_releases.dart';
-import '../version.dart';
 import 'cfvm_home.dart';
 import 'sdk_cache.dart';
 import '../cli_name.dart';
@@ -24,17 +21,10 @@ class ConfiguredVersion {
 
 /// Decides which Flutter SDK to use.
 class VersionResolver {
-  VersionResolver({
-    required this.home,
-    required this.host,
-    required this.cache,
-    required this.releases,
-  });
+  VersionResolver({required this.home, required this.cache});
 
   final CfvmHome home;
-  final HostPlatform host;
   final SdkCache cache;
-  final ReleaseRepository releases;
 
   /// The project version for [directory] (searching parent directories),
   /// falling back to the global version. Null if neither is set.
@@ -77,32 +67,5 @@ class VersionResolver {
       );
     }
     return sdk;
-  }
-
-  /// Maps a user request (version or channel) to the name of an installed
-  /// SDK. Channels `stable`/`beta` resolve to their current release version.
-  Future<String> resolveInstalled(String request) async {
-    final name = canonicalVersion(request);
-    validateVersionName(name);
-    if (cache.isInstalled(name)) return name;
-
-    if (archiveChannels.contains(name)) {
-      final release = (await releases.fetch()).resolve(name, host);
-      if (cache.isInstalled(release.name)) return release.name;
-      throw CfvmException(
-        'Flutter ${release.name} (current $name) is not installed.',
-        hint: 'Install it with: $cliName install $name',
-      );
-    }
-    if (cache.find(name) != null) {
-      throw CfvmException(
-        'The installation of Flutter $name is incomplete.',
-        hint: 'Reinstall it with: $cliName install $name',
-      );
-    }
-    throw CfvmException(
-      'Flutter $name is not installed.',
-      hint: 'Install it with: $cliName install $name',
-    );
   }
 }
