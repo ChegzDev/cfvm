@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cfvm/cfvm.dart';
 
 Future<void> main(List<String> arguments) async {
+  cliName = detectCliName(Platform.script.toFilePath());
   final int code;
   try {
     code = await CfvmCommandRunner(CfvmContext.production()).run(arguments);

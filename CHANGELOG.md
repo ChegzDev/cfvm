@@ -1,3 +1,9 @@
+## 1.0.2
+
+- Hints, help and error messages now match how CFVM was installed: `cfvm …`
+  after `dart pub global activate cfvm`, `dart run cfvm …` otherwise.
+  Previously they always showed `dart run cfvm …`.
+
 ## 1.0.1
 
 - `use` and `global` now install the requested version automatically when it

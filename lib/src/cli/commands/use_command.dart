@@ -36,7 +36,7 @@ class UseCommand extends CfvmCommand {
     context.saveGlobalConfig(global);
 
     logger.info('Project now uses Flutter $version (${config.filePath}).');
-    logger.info('Run Flutter with: dart run cfvm flutter <command>');
+    logger.info('Run Flutter with: $cliName flutter <command>');
     return 0;
   }
 }

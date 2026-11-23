@@ -50,8 +50,9 @@ dart pub global activate cfvm
 cfvm list
 ```
 
-Messages printed by CFVM always show the `dart run cfvm …` form. With Option B,
-type `cfvm …` instead.
+CFVM's messages and hints match how you installed it: `cfvm …` with Option B,
+`dart run cfvm …` otherwise. The examples below use the `dart run cfvm` form.
+With Option B, type `cfvm …` instead.
 
 ## Usage
 

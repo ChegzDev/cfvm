@@ -42,7 +42,7 @@ class VersionResolver {
   InstalledSdk resolveActive(String directory) {
     final configured = configuredVersion(directory);
     if (configured == null) {
-      throw const CfvmException(
+      throw CfvmException(
         'No Flutter version configured.',
         hint: 'Run "$cliName use <version>" in your project, '
             'or "$cliName global <version>" to set a default.',
