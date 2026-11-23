@@ -20,15 +20,8 @@ side by side and choosing which one each project uses.
 
 ## Installation
 
-```bash
-git clone https://github.com/ChegzDev/cfvm.git
-cd cfvm
-dart pub get
-dart run cfvm --help
-```
-
-`dart run cfvm` runs CFVM for the **current directory**. To use it from your
-Flutter projects, choose one of these:
+CFVM is published on [pub.dev](https://pub.dev/packages/cfvm).
+`dart run cfvm` runs CFVM for the **current directory**. Choose one of these:
 
 **Option A: add it as a dev dependency of your project** (so `dart run cfvm`
 works inside that project):
@@ -36,8 +29,7 @@ works inside that project):
 ```yaml
 # pubspec.yaml of your Flutter project
 dev_dependencies:
-  cfvm:
-    git: https://github.com/ChegzDev/cfvm.git   # or path: /path/to/cfvm
+  cfvm: ^1.0.0
 ```
 
 ```bash
@@ -54,8 +46,7 @@ that's a problem, use Option B.
 everywhere):
 
 ```bash
-dart pub global activate --source git https://github.com/ChegzDev/cfvm.git
-# or, from a local clone: dart pub global activate --source path /path/to/cfvm
+dart pub global activate cfvm
 cfvm list
 ```
 
@@ -183,7 +174,10 @@ example an external drive), set the `CFVM_HOME` environment variable.
 ## Development
 
 ```bash
+git clone https://github.com/ChegzDev/cfvm.git
+cd cfvm
 dart pub get
+dart run cfvm --help
 dart analyze
 dart test
 ```
@@ -200,3 +194,7 @@ lib/src/sdk/                  CFVM home layout, installed SDKs, installer,
 lib/src/io/                   logger, prompts, process execution
 test/                         unit tests (fakes in test/helpers.dart)
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
